@@ -17,3 +17,5 @@ def pb(Rs, yg, T, API):
     Pb = 1.7669 + 1.7447 * log_A - 0.30218 * (log_A) ** 2
 
     return Pb
+# commit prueba
+
