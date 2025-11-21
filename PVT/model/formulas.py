@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def pb(Rs, yg, T, API):
+#%% def pb(Rs, yg, T, API):
     """
     Rs: Solubilidad del gas en petróleo (ft^3/bbl).
     yg: Gravedad específica del gas.
@@ -93,7 +93,7 @@ def calcular_bo_standing(P_array, Pb, Rs_b, gamma_g, gamma_o, T, Co):
     return np.array(Bo_array)
 
 
-# --- DATOS DE EJEMPLO ---
+# --- DATOS DE EJEMPLO ----
 presiones = np.arange(0, 5000, 100)  # De 0 a 5000 psi
 Pb_ejemplo = 2500.0  # Presión de burbuja (psi)
 Rs_b_ejemplo = 500.0  # Rs en la burbuja (scf/stb)
@@ -126,3 +126,59 @@ plt.legend()
 # Mostrar gráfica
 plt.show()
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def calcular_Rs_standing(P, T, API, gamma_g):
+    """
+    Calcula el Rs usando la correlación de Standing.
+
+    Parámetros:
+    P       : Presión (psia)
+    T       : Temperatura (Fahrenheit)
+    API     : Gravedad API del petróleo
+    gamma_g : Gravedad específica del gas
+    """
+    # Cálculo del exponente x según la segunda fórmula de la imagen
+    x = 0.0125 * API - 0.00091 * T
+
+    # Cálculo de Rs según la primera fórmula
+    # Rs = gamma_g * [ (P/18.2 + 1.4) * 10^x ] ^ 1.2048
+    term_inner = (P / 18.2) + 1.4
+    term_bracket = term_inner * (10 ** x)
+    Rs = gamma_g * (term_bracket ** 1.2048)
+
+    return Rs
+
+
+# --- 1. Definir los datos de entrada ---
+# Rango de presiones de 0 a 5000 psia (puedes ajustar esto)
+presiones = np.linspace(14.7, 5000, 100)
+
+# Propiedades fijas del fluido (Ejemplo típico)
+temp_F = 200  # Temperatura en °F
+gravedad_api = 35  # °API
+gravedad_gas = 0.7  # Gravedad específica del gas
+
+# --- 2. Calcular Rs ---
+rs_valores = calcular_Rs_standing(presiones, temp_F, gravedad_api, gravedad_gas)
+
+# --- 3. Graficar con Matplotlib ---
+plt.figure(figsize=(10, 6))  # Tamaño de la figura
+
+plt.plot(presiones, rs_valores,
+         label=f'API={gravedad_api}, T={temp_F}°F, $\gamma_g$={gravedad_gas}',
+         color='blue', linewidth=2)
+
+# Formato del gráfico
+plt.title('Correlación de Standing: Solubilidad del Gas ($R_s$) vs Presión',
+          fontsize=14)
+plt.xlabel('Presión (psia)', fontsize=12)
+plt.ylabel('Rs (pc/bbl)', fontsize=12)
+plt.grid(True, which='both', linestyle='--', alpha=0.7)
+plt.legend()
+plt.minorticks_on()
+
+# Mostrar gráfico
+plt.show()
